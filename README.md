@@ -60,7 +60,30 @@ stream.close()
 p.terminate()
 ```
 
-A much more sensible example is the case of streaming mp3 data with requests:
+A much more sensible example is the case of downloading mp3 data with requests:
+
+```python
+from pymp3decoder import Decoder
+CHUNK_SIZE = 4096
+
+import requests
+
+decoder = Decoder(CHUNK_SIZE*20)
+remote_mp3 = requests.get("http://localhost:8000/example.mp3")
+
+def take_chunk(content):
+    """ Split a buffer of data into chunks """
+
+    num_blocks = int(math.ceil(1.0*len(content)/CHUNK_SIZE))
+
+    for start in range(num_blocks):
+        yield content[CHUNK_SIZE*start:CHUNK_SIZE*(start+1)]
+
+for chunk in decoder.decode_iter(take_chunk(remote_mp3.content)):
+    ...
+```
+
+Or streaming it:
 
 ```python
 from pymp3decoder import Decoder
@@ -71,15 +94,7 @@ import requests
 decoder = Decoder(CHUNK_SIZE*20)
 remote_mp3 = requests.get("http://localhost:8000/example.mp3", stream=True)
 
-def take_chunk(content):
-    """ Split a buffer of data into chunks """
-
-    num_blocks = int(math.ceil(1.0*len(content)/CHUNK_SIZE))
-
-    for start in range(num_blocks):
-        yield content[CHUNK_SIZE*start:CHUNK_SIZE*(start+1)]
-
-for chunk in decoder.decode_iter(take_chunk(remote_mp3)):
+for chunk in decoder.decode_iter(remote_mp3.iter_content(chunk_size=CHUNK_SIZE)):
     ...
 ```
 
