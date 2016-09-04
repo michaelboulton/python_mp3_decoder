@@ -4,21 +4,10 @@
 
 from setuptools import setup, Extension
 
-from distutils.command.build import build
-from subprocess import check_call
-
-
-class SwigBuild(build):
-    def run(self):
-        swig_args = (["swig3.0", "-python", "swig_interface.i"],)
-        self.execute(check_call, swig_args,
-                     msg="Swiggifying interface")
-        build.run(self)
-
 interlace_module = Extension(
-    "_pymp3_c",
+    "pymp3decoder._pymp3_c",
     sources=[
-        "swig_interface_wrap.c",
+        "pymp3decoder/swig_interface.i",
     ],
     libraries = ['mp3lame'],
 )
@@ -38,5 +27,4 @@ setup(
     test_suite="tests",
     setup_requires=['pytest-runner'],
     tests_require=['pytest', 'pyaudio'],
-    cmdclass={'build': SwigBuild},
 )
