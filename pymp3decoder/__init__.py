@@ -61,7 +61,7 @@ class Decoder(object):
         length.
 
         Args:
-            mp3_buffer (str): string corresponding to a chunk of raw mp3 data
+            mp3_buffer (bytes): string corresponding to a chunk of raw mp3 data
         Returns:
             header_length (int): Length of ID3v2 header
         """
